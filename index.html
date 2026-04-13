@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Concentración de Magnesio en Salmuera</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #f5f5f3;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 12px;
+      border: 1px solid #e0ddd6;
+      padding: 2rem;
+      width: 100%;
+      max-width: 480px;
+    }
+
+    h1 {
+      font-size: 16px;
+      font-weight: 500;
+      color: #1a1a18;
+      margin-bottom: 0.25rem;
+    }
+
+    .subtitulo {
+      font-size: 13px;
+      color: #888780;
+      margin-bottom: 1.75rem;
+    }
+
+    .progreso {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 1.75rem;
+    }
+
+    .prog-dot {
+      height: 4px;
+      flex: 1;
+      border-radius: 2px;
+      background: #d3d1c7;
+      transition: background 0.3s;
+    }
+
+    .prog-dot.hecho { background: #378add; }
+
+    .paso { display: none; }
+    .paso.activo { display: block; }
+
+    .modulo-label {
+      font-size: 12px;
+      color: #888780;
+      margin-bottom: 1.25rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .campo { margin-bottom: 1.25rem; }
+
+    .campo label {
+      display: block;
+      font-size: 13px;
+      color: #5f5e5a;
+      margin-bottom: 6px;
+    }
+
+    .campo input {
+      width: 100%;
+      padding: 8px 12px;
+      font-size: 15px;
+      border: 1px solid #d3d1c7;
+      border-radius: 8px;
+      outline: none;
+      background: #fff;
+      color: #1a1a18;
+      transition: border-color 0.2s;
+    }
+
+    .campo input:focus { border-color: #378add; }
+
+    .unidad {
+      font-size: 12px;
+      color: #b4b2a9;
+      margin-top: 4px;
+    }
+
+    .error {
+      font-size: 12px;
+      color: #e24b4a;
+      margin-top: 4px;
+      display: none;
+    }
+
+    .dato-previo {
+      background: #f5f5f3;
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 13px;
+      color: #888780;
+      margin-bottom: 0.6rem;
+    }
+
+    .dato-previo span {
+      font-weight: 500;
+      color: #1a1a18;
+    }
+
+    .btn {
+      margin-top: 0.5rem;
+      width: 100%;
+      padding: 10px;
+      font-size: 15px;
+      cursor: pointer;
+      border: 1px solid #d3d1c7;
+      border-radius: 8px;
+      background: transparent;
+      color: #1a1a18;
+      transition: background 0.15s;
+    }
+
+    .btn:hover { background: #f5f5f3; }
+    .btn:active { transform: scale(0.98); }
+
+    .resultado-card {
+      background: #f5f5f3;
+      border-radius: 12px;
+      border: 1px solid #d3d1c7;
+      padding: 2rem;
+      text-align: center;
+      margin-top: 1rem;
+    }
+
+    .resultado-label {
+      font-size: 13px;
+      color: #888780;
+      margin-bottom: 10px;
+    }
+
+    .resultado-valor {
+      font-size: 48px;
+      font-weight: 500;
+      color: #1a1a18;
+      line-height: 1;
+    }
+
+    .resultado-unidad {
+      font-size: 15px;
+      color: #888780;
+      margin-top: 8px;
+    }
+
+    .btn-reset { margin-top: 1.25rem; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Concentración de magnesio en salmuera</h1>
+    <p class="subtitulo">Ingresa los datos del ensayo para obtener el resultado</p>
+
+    <div class="progreso">
+      <div class="prog-dot hecho" id="d1"></div>
+      <div class="prog-dot" id="d2"></div>
+      <div class="prog-dot" id="d3"></div>
+      <div class="prog-dot" id="d4"></div>
+    </div>
+
+    <!-- PASO 1 -->
+    <div class="paso activo" id="paso1">
+      <div class="modulo-label">Módulo 1 de 4 · Densidad</div>
+      <div class="campo">
+        <label for="densidad">Densidad de la salmuera de magnesio</label>
+        <input type="number" id="densidad" placeholder="Ej: 1.285" step="0.001" min="0.9" max="2.0" />
+        <div class="unidad">g/mL</div>
+        <div class="error" id="err1">Ingresa un valor entre 0,9 y 2,0 g/mL</div>
+      </div>
+      <button class="btn" onclick="ir(1)">Siguiente →</button>
+    </div>
+
+    <!-- PASO 2 -->
+    <div class="paso" id="paso2">
+      <div class="modulo-label">Módulo 2 de 4 · Masa de salmuera</div>
+      <div class="dato-previo">Densidad: <span id="r-densidad">—</span></div>
+      <div class="campo">
+        <label for="gramos">Gramos de salmuera pesados</label>
+        <input type="number" id="gramos" placeholder="Ej: 250.0" step="0.1" min="0" />
+        <div class="unidad">g</div>
+        <div class="error" id="err2">Ingresa un valor mayor a 0</div>
+      </div>
+      <button class="btn" onclick="ir(2)">Siguiente →</button>
+    </div>
+
+    <!-- PASO 3 -->
+    <div class="paso" id="paso3">
+      <div class="modulo-label">Módulo 3 de 4 · Agua de dilución</div>
+      <div class="dato-previo">Densidad: <span id="r-densidad2">—</span></div>
+      <div class="dato-previo">Gramos de salmuera: <span id="r-gramos">—</span></div>
+      <div class="campo">
+        <label for="agua">Gramos de agua de dilución pesados para el aforo</label>
+        <input type="number" id="agua" placeholder="Ej: 750.0" step="0.1" min="0" />
+        <div class="unidad">g (densidad agua = 1 g/mL, equivale a mL)</div>
+        <div class="error" id="err3">Ingresa un valor mayor a 0</div>
+      </div>
+      <button class="btn" onclick="ir(3)">Siguiente →</button>
+    </div>
+
+    <!-- PASO 4 -->
+    <div class="paso" id="paso4">
+      <div class="modulo-label">Módulo 4 de 4 · Lectura del medidor</div>
+      <div class="dato-previo">Densidad: <span id="r-densidad3">—</span></div>
+      <div class="dato-previo">Gramos de salmuera: <span id="r-gramos2">—</span></div>
+      <div class="dato-previo">Agua de dilución: <span id="r-agua">—</span></div>
+      <div class="campo">
+        <label for="ppm">Lectura del medidor de magnesio</label>
+        <input type="number" id="ppm" placeholder="Ej: 340.0" step="0.1" min="0" />
+        <div class="unidad">ppm (mg/L)</div>
+        <div class="error" id="err4">Ingresa un valor mayor o igual a 0</div>
+      </div>
+      <button class="btn" onclick="calcular()">Calcular resultado</button>
+    </div>
+
+    <!-- RESULTADO -->
+    <div class="paso" id="paso5">
+      <div class="modulo-label">Resultado</div>
+      <div class="resultado-card">
+        <div class="resultado-label">Concentración de magnesio en la salmuera</div>
+        <div class="resultado-valor" id="resultado-valor">—</div>
+        <div class="resultado-unidad">ppm (mg/L)</div>
+      </div>
+      <button class="btn btn-reset" onclick="reiniciar()">Nueva medición</button>
+    </div>
+  </div>
+
+  <script>
+    const datos = {};
+
+    function fmt(v) {
+      return v.toLocaleString('es-CL', { minimumFractionDigits: 2, maximumFractionDigits: 3 });
+    }
+
+    function ir(paso) {
+      if (paso === 1) {
+        const v = parseFloat(document.getElementById('densidad').value);
+        if (isNaN(v) || v < 0.9 || v > 2.0) { document.getElementById('err1').style.display = 'block'; return; }
+        document.getElementById('err1').style.display = 'none';
+        datos.densidad = v;
+        const t = fmt(v) + ' g/mL';
+        document.getElementById('r-densidad').textContent = t;
+        document.getElementById('r-densidad2').textContent = t;
+        document.getElementById('r-densidad3').textContent = t;
+        mostrar(2);
+      } else if (paso === 2) {
+        const v = parseFloat(document.getElementById('gramos').value);
+        if (isNaN(v) || v <= 0) { document.getElementById('err2').style.display = 'block'; return; }
+        document.getElementById('err2').style.display = 'none';
+        datos.gramos = v;
+        const t = fmt(v) + ' g';
+        document.getElementById('r-gramos').textContent = t;
+        document.getElementById('r-gramos2').textContent = t;
+        mostrar(3);
+      } else if (paso === 3) {
+        const v = parseFloat(document.getElementById('agua').value);
+        if (isNaN(v) || v <= 0) { document.getElementById('err3').style.display = 'block'; return; }
+        document.getElementById('err3').style.display = 'none';
+        datos.agua = v;
+        document.getElementById('r-agua').textContent = fmt(v) + ' g';
+        mostrar(4);
+      }
+    }
+
+    function calcular() {
+      const v = parseFloat(document.getElementById('ppm').value);
+      if (isNaN(v) || v < 0) { document.getElementById('err4').style.display = 'block'; return; }
+      document.getElementById('err4').style.display = 'none';
+      datos.ppm = v;
+
+      const A = datos.gramos / datos.densidad;
+      const B = datos.agua;
+      const C = (A + B) / A;
+      const resultado = Math.round(datos.ppm * C);
+
+      document.getElementById('resultado-valor').textContent = String(resultado);
+      mostrar(5);
+    }
+
+    function mostrar(n) {
+      for (let i = 1; i <= 5; i++) {
+        document.getElementById('paso' + i).classList.toggle('activo', i === n);
+        const dot = document.getElementById('d' + i);
+        if (dot) dot.classList.toggle('hecho', i <= n);
+      }
+    }
+
+    function reiniciar() {
+      ['densidad', 'gramos', 'agua', 'ppm'].forEach(id => document.getElementById(id).value = '');
+      Object.keys(datos).forEach(k => delete datos[k]);
+      mostrar(1);
+    }
+  </script>
+</body>
+</html>
