@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Concentración de Magnesio en Salmuera</title>
+  <title>Concentración de Magnesio — CING Requínoa</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -18,7 +18,7 @@
     }
 
     .card {
-      background: #ffffff;
+      background: #fff;
       border-radius: 12px;
       border: 1px solid #e0ddd6;
       padding: 2rem;
@@ -26,147 +26,265 @@
       max-width: 480px;
     }
 
-    h1 {
-      font-size: 16px;
-      font-weight: 500;
-      color: #1a1a18;
-      margin-bottom: 0.25rem;
-    }
+    h1 { font-size: 16px; font-weight: 500; color: #1a1a18; margin-bottom: 0.25rem; }
+    .subtitulo { font-size: 13px; color: #888780; margin-bottom: 1.75rem; }
 
-    .subtitulo {
-      font-size: 13px;
-      color: #888780;
-      margin-bottom: 1.75rem;
-    }
-
-    .progreso {
-      display: flex;
-      gap: 6px;
-      margin-bottom: 1.75rem;
-    }
-
-    .prog-dot {
-      height: 4px;
-      flex: 1;
-      border-radius: 2px;
-      background: #d3d1c7;
-      transition: background 0.3s;
-    }
-
-    .prog-dot.hecho { background: #378add; }
+    .progreso { display: flex; gap: 6px; margin-bottom: 1.75rem; }
+    .prog-dot { height: 4px; flex: 1; border-radius: 2px; background: #d3d1c7; transition: background 0.3s; }
+    .prog-dot.hecho { background: #e89a00; }
 
     .paso { display: none; }
     .paso.activo { display: block; }
 
-    .modulo-label {
-      font-size: 12px;
-      color: #888780;
-      margin-bottom: 1.25rem;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
+    .modulo-label { font-size: 12px; color: #888780; margin-bottom: 1.25rem; text-transform: uppercase; letter-spacing: 0.04em; }
 
     .campo { margin-bottom: 1.25rem; }
+    .campo label { display: block; font-size: 13px; color: #5f5e5a; margin-bottom: 6px; }
+    .campo input {
+      width: 100%; padding: 8px 12px; font-size: 15px;
+      border: 1px solid #d3d1c7; border-radius: 8px;
+      outline: none; background: #fff; color: #1a1a18; transition: border-color 0.2s;
+    }
+    .campo input:focus { border-color: #e89a00; }
+    .unidad { font-size: 12px; color: #b4b2a9; margin-top: 4px; }
+    .error { font-size: 12px; color: #e24b4a; margin-top: 4px; display: none; }
 
-    .campo label {
-      display: block;
-      font-size: 13px;
-      color: #5f5e5a;
+    .dato-previo {
+      background: #f5f5f3; border-radius: 8px;
+      padding: 8px 14px; font-size: 13px; color: #888780; margin-bottom: 0.6rem;
+    }
+    .dato-previo span { font-weight: 500; color: #1a1a18; }
+
+    .btn {
+      margin-top: 0.5rem; width: 100%; padding: 10px; font-size: 15px; cursor: pointer;
+      border: 1px solid #d3d1c7; border-radius: 8px; background: transparent;
+      color: #1a1a18; transition: background 0.15s;
+    }
+    .btn:hover { background: #f5f5f3; }
+    .btn:active { transform: scale(0.98); }
+    .btn.primario { background: #e89a00; border-color: #e89a00; color: #fff; font-weight: 500; }
+    .btn.primario:hover { background: #cf8a00; }
+
+    .resultado-card {
+      background: #f5f5f3; border-radius: 12px; border: 1px solid #d3d1c7;
+      padding: 2rem; text-align: center; margin-top: 1rem;
+    }
+    .resultado-label { font-size: 13px; color: #888780; margin-bottom: 10px; }
+    .resultado-valor { font-size: 48px; font-weight: 500; color: #1a1a18; line-height: 1; }
+    .resultado-unidad { font-size: 15px; color: #888780; margin-top: 8px; }
+
+    .btn-grupo { display: flex; gap: 8px; margin-top: 1rem; }
+    .btn-grupo .btn { margin-top: 0; }
+
+    /* ── REPORTE DE IMPRESIÓN ── */
+    #reporte {
+      display: none;
+      position: fixed; inset: 0; background: #fff;
+      z-index: 100; overflow-y: auto;
+      padding: 0;
+    }
+
+    .rpt-page {
+      width: 210mm;
+      min-height: 297mm;
+      margin: 0 auto;
+      padding: 18mm 20mm 20mm;
+      background: #fff;
+      font-family: 'Times New Roman', Times, serif;
+      font-size: 11pt;
+      color: #000;
+    }
+
+    .rpt-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      border-bottom: 2px solid #e89a00;
+      padding-bottom: 10px;
       margin-bottom: 6px;
     }
 
-    .campo input {
-      width: 100%;
-      padding: 8px 12px;
-      font-size: 15px;
-      border: 1px solid #d3d1c7;
-      border-radius: 8px;
-      outline: none;
-      background: #fff;
-      color: #1a1a18;
-      transition: border-color 0.2s;
+    .rpt-logo-area { display: flex; align-items: center; gap: 14px; }
+
+    .rpt-logo-circle {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: #e89a00;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      flex-shrink: 0;
     }
 
-    .campo input:focus { border-color: #378add; }
-
-    .unidad {
-      font-size: 12px;
-      color: #b4b2a9;
-      margin-top: 4px;
+    .rpt-logo-circle .lc-cing {
+      font-family: system-ui, sans-serif;
+      font-size: 18px; font-weight: 700; color: #fff; line-height: 1;
     }
 
-    .error {
-      font-size: 12px;
-      color: #e24b4a;
-      margin-top: 4px;
-      display: none;
+    .rpt-logo-circle .lc-req {
+      font-family: system-ui, sans-serif;
+      font-size: 7px; font-style: italic; color: #fff; line-height: 1.2;
     }
 
-    .dato-previo {
-      background: #f5f5f3;
-      border-radius: 8px;
-      padding: 8px 14px;
-      font-size: 13px;
-      color: #888780;
-      margin-bottom: 0.6rem;
+    .rpt-empresa h2 {
+      font-size: 14pt; font-weight: 700;
+      font-family: system-ui, sans-serif;
+      color: #1a1a18; margin-bottom: 2px;
     }
 
-    .dato-previo span {
-      font-weight: 500;
-      color: #1a1a18;
+    .rpt-empresa p {
+      font-size: 9pt; color: #5f5e5a;
+      font-family: system-ui, sans-serif;
     }
 
-    .btn {
-      margin-top: 0.5rem;
-      width: 100%;
-      padding: 10px;
-      font-size: 15px;
-      cursor: pointer;
-      border: 1px solid #d3d1c7;
-      border-radius: 8px;
-      background: transparent;
-      color: #1a1a18;
-      transition: background 0.15s;
+    .rpt-meta {
+      text-align: right;
+      font-family: system-ui, sans-serif;
+      font-size: 9pt; color: #5f5e5a;
     }
 
-    .btn:hover { background: #f5f5f3; }
-    .btn:active { transform: scale(0.98); }
+    .rpt-meta strong { color: #1a1a18; display: block; font-size: 10pt; margin-bottom: 2px; }
 
-    .resultado-card {
-      background: #f5f5f3;
-      border-radius: 12px;
-      border: 1px solid #d3d1c7;
-      padding: 2rem;
+    .rpt-titulo {
       text-align: center;
-      margin-top: 1rem;
-    }
-
-    .resultado-label {
-      font-size: 13px;
-      color: #888780;
-      margin-bottom: 10px;
-    }
-
-    .resultado-valor {
-      font-size: 48px;
-      font-weight: 500;
+      margin: 14px 0 10px;
+      font-size: 13pt;
+      font-weight: 700;
+      font-family: system-ui, sans-serif;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
       color: #1a1a18;
-      line-height: 1;
     }
 
-    .resultado-unidad {
-      font-size: 15px;
-      color: #888780;
-      margin-top: 8px;
+    .rpt-subtitulo {
+      text-align: center;
+      font-size: 9pt;
+      color: #5f5e5a;
+      font-family: system-ui, sans-serif;
+      margin-bottom: 18px;
+      border-bottom: 1px solid #e0ddd6;
+      padding-bottom: 10px;
     }
 
-    .btn-reset { margin-top: 1.25rem; }
+    .rpt-seccion {
+      font-size: 10pt; font-weight: 700;
+      font-family: system-ui, sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #e89a00;
+      margin: 16px 0 8px;
+      border-bottom: 1px solid #e0ddd6;
+      padding-bottom: 4px;
+    }
+
+    .rpt-tabla { width: 100%; border-collapse: collapse; font-size: 10.5pt; }
+    .rpt-tabla td { padding: 5px 8px; border-bottom: 0.5px solid #e0ddd6; }
+    .rpt-tabla td:first-child { color: #5f5e5a; width: 60%; }
+    .rpt-tabla td:last-child { font-weight: 500; text-align: right; }
+
+    .rpt-resultado-box {
+      border: 2px solid #e89a00;
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin: 18px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .rpt-resultado-box .rr-label {
+      font-family: system-ui, sans-serif;
+      font-size: 11pt; color: #5f5e5a;
+    }
+
+    .rpt-resultado-box .rr-valor {
+      font-family: system-ui, sans-serif;
+      font-size: 28pt; font-weight: 700; color: #1a1a18; line-height: 1;
+    }
+
+    .rpt-resultado-box .rr-unidad {
+      font-family: system-ui, sans-serif;
+      font-size: 11pt; color: #888780; margin-top: 4px;
+    }
+
+    .rpt-firmas {
+      margin-top: 32px;
+      display: flex;
+      gap: 24px;
+    }
+
+    .rpt-firma-box {
+      flex: 1;
+      border-top: 1px solid #000;
+      padding-top: 6px;
+      font-family: system-ui, sans-serif;
+      font-size: 9pt; color: #5f5e5a;
+      min-height: 56px;
+    }
+
+    .rpt-firma-box strong { display: block; font-size: 9pt; color: #1a1a18; margin-bottom: 2px; }
+
+    .rpt-footer {
+      margin-top: 24px;
+      border-top: 1px solid #e0ddd6;
+      padding-top: 8px;
+      font-family: system-ui, sans-serif;
+      font-size: 8pt; color: #b4b2a9;
+      text-align: center;
+    }
+
+    .rpt-obs-area {
+      width: 100%;
+      border: 1px solid #d3d1c7;
+      border-radius: 6px;
+      padding: 8px;
+      font-size: 10.5pt;
+      font-family: 'Times New Roman', serif;
+      min-height: 60px;
+      resize: vertical;
+      color: #1a1a18;
+      outline: none;
+    }
+
+    .rpt-input {
+      border: none; border-bottom: 1px solid #888;
+      outline: none; font-size: 10.5pt;
+      font-family: 'Times New Roman', serif;
+      color: #1a1a18; background: transparent;
+      width: 100%;
+    }
+
+    .rpt-botones {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: #fff; border-top: 1px solid #e0ddd6;
+      padding: 12px 20px;
+      display: flex; gap: 10px; justify-content: flex-end;
+      z-index: 101;
+    }
+
+    .rpt-btn {
+      padding: 8px 20px; font-size: 14px; cursor: pointer;
+      border-radius: 8px; border: 1px solid #d3d1c7;
+      background: transparent; color: #1a1a18;
+    }
+
+    .rpt-btn.imprimir {
+      background: #e89a00; border-color: #e89a00;
+      color: #fff; font-weight: 500;
+    }
+
+    @media print {
+      body, #reporte { background: #fff; }
+      .rpt-botones { display: none !important; }
+      #reporte { position: static; overflow: visible; }
+      .rpt-page { width: 100%; padding: 10mm 14mm; }
+      .rpt-obs-area, .rpt-input { border-color: #ccc; }
+    }
   </style>
 </head>
 <body>
-  <div class="card">
+  <!-- ── FORMULARIO ── -->
+  <div class="card" id="app">
     <h1>Concentración de magnesio en salmuera</h1>
-    <p class="subtitulo">Ingresa los datos del ensayo para obtener el resultado</p>
+    <p class="subtitulo">CING Requínoa · Mineral science</p>
 
     <div class="progreso">
       <div class="prog-dot hecho" id="d1"></div>
@@ -175,7 +293,6 @@
       <div class="prog-dot" id="d4"></div>
     </div>
 
-    <!-- PASO 1 -->
     <div class="paso activo" id="paso1">
       <div class="modulo-label">Módulo 1 de 4 · Densidad</div>
       <div class="campo">
@@ -187,7 +304,6 @@
       <button class="btn" onclick="ir(1)">Siguiente →</button>
     </div>
 
-    <!-- PASO 2 -->
     <div class="paso" id="paso2">
       <div class="modulo-label">Módulo 2 de 4 · Masa de salmuera</div>
       <div class="dato-previo">Densidad: <span id="r-densidad">—</span></div>
@@ -200,7 +316,6 @@
       <button class="btn" onclick="ir(2)">Siguiente →</button>
     </div>
 
-    <!-- PASO 3 -->
     <div class="paso" id="paso3">
       <div class="modulo-label">Módulo 3 de 4 · Agua de dilución</div>
       <div class="dato-previo">Densidad: <span id="r-densidad2">—</span></div>
@@ -208,13 +323,12 @@
       <div class="campo">
         <label for="agua">Gramos de agua de dilución pesados para el aforo</label>
         <input type="number" id="agua" placeholder="Ej: 750.0" step="0.1" min="0" />
-        <div class="unidad">g (densidad agua = 1 g/mL, equivale a mL)</div>
+        <div class="unidad">g</div>
         <div class="error" id="err3">Ingresa un valor mayor a 0</div>
       </div>
       <button class="btn" onclick="ir(3)">Siguiente →</button>
     </div>
 
-    <!-- PASO 4 -->
     <div class="paso" id="paso4">
       <div class="modulo-label">Módulo 4 de 4 · Lectura del medidor</div>
       <div class="dato-previo">Densidad: <span id="r-densidad3">—</span></div>
@@ -229,7 +343,6 @@
       <button class="btn" onclick="calcular()">Calcular resultado</button>
     </div>
 
-    <!-- RESULTADO -->
     <div class="paso" id="paso5">
       <div class="modulo-label">Resultado</div>
       <div class="resultado-card">
@@ -237,7 +350,105 @@
         <div class="resultado-valor" id="resultado-valor">—</div>
         <div class="resultado-unidad">ppm (mg/L)</div>
       </div>
-      <button class="btn btn-reset" onclick="reiniciar()">Nueva medición</button>
+      <div class="btn-grupo">
+        <button class="btn" onclick="reiniciar()">Nueva medición</button>
+        <button class="btn primario" onclick="abrirReporte()">Generar reporte →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── REPORTE ── -->
+  <div id="reporte">
+    <div class="rpt-page">
+
+      <div class="rpt-header">
+        <div class="rpt-logo-area">
+          <div class="rpt-logo-circle">
+            <span class="lc-cing">CING</span>
+            <span class="lc-req">Requínoa</span>
+          </div>
+          <div class="rpt-empresa">
+            <h2>Centro de Innovación e Ingeniería</h2>
+            <p>Procesamiento de minerales no metálicos</p>
+            <p>Requínoa, Región del Libertador General Bernardo O'Higgins</p>
+          </div>
+        </div>
+        <div class="rpt-meta">
+          <strong>Informe de ensayo</strong>
+          <span id="rpt-folio">—</span><br/>
+          <span id="rpt-fecha">—</span><br/>
+          <span id="rpt-hora">—</span>
+        </div>
+      </div>
+
+      <div class="rpt-titulo">Determinación de concentración de magnesio</div>
+      <div class="rpt-subtitulo">Análisis de salmuera · Método fotométrico con dilución gravimétrica</div>
+
+      <div class="rpt-seccion">Datos de la muestra</div>
+      <table class="rpt-tabla">
+        <tr>
+          <td>Identificación de muestra</td>
+          <td><input class="rpt-input" id="rpt-muestra" placeholder="Ingrese código o descripción" /></td>
+        </tr>
+        <tr>
+          <td>Origen / punto de muestreo</td>
+          <td><input class="rpt-input" id="rpt-origen" placeholder="Ej: Estanque N°3, línea de proceso" /></td>
+        </tr>
+        <tr>
+          <td>Fecha de muestreo</td>
+          <td><input class="rpt-input" id="rpt-fecha-muestra" type="date" /></td>
+        </tr>
+      </table>
+
+      <div class="rpt-seccion">Datos del ensayo</div>
+      <table class="rpt-tabla">
+        <tr><td>Densidad de la salmuera</td><td id="d-densidad">—</td></tr>
+        <tr><td>Masa de salmuera pesada</td><td id="d-gramos">—</td></tr>
+        <tr><td>Volumen de salmuera utilizado (A)</td><td id="d-volsal">—</td></tr>
+        <tr><td>Agua de dilución para aforo (B)</td><td id="d-agua">—</td></tr>
+        <tr><td>Factor de dilución (C = (A+B)/A)</td><td id="d-factor">—</td></tr>
+        <tr><td>Lectura del medidor</td><td id="d-ppm">—</td></tr>
+      </table>
+
+      <div class="rpt-seccion">Resultado</div>
+      <div class="rpt-resultado-box">
+        <div>
+          <div class="rr-label">Concentración de Mg en la salmuera</div>
+          <div class="rr-unidad">ppm &nbsp;(mg/L)</div>
+        </div>
+        <div style="text-align:right">
+          <div class="rr-valor" id="d-resultado">—</div>
+        </div>
+      </div>
+
+      <div class="rpt-seccion">Observaciones</div>
+      <textarea class="rpt-obs-area" placeholder="Ingrese observaciones del ensayo si corresponde…"></textarea>
+
+      <div class="rpt-firmas">
+        <div class="rpt-firma-box">
+          <strong>Nombre laboratorista</strong>
+          <input class="rpt-input" id="rpt-laboratorista" placeholder="Nombre completo" />
+        </div>
+        <div class="rpt-firma-box">
+          <strong>Firma y timbre</strong>
+          &nbsp;
+        </div>
+        <div class="rpt-firma-box">
+          <strong>Revisado por</strong>
+          <input class="rpt-input" id="rpt-revisor" placeholder="Nombre completo" />
+        </div>
+      </div>
+
+      <div class="rpt-footer">
+        Centro de Innovación e Ingeniería CING · Mineral science · Requínoa, Chile<br/>
+        Documento generado el <span id="rpt-pie-fecha">—</span> · Solo válido con firma y timbre originales
+      </div>
+
+    </div>
+
+    <div class="rpt-botones">
+      <button class="rpt-btn" onclick="cerrarReporte()">← Volver</button>
+      <button class="rpt-btn imprimir" onclick="window.print()">Imprimir / Guardar PDF</button>
     </div>
   </div>
 
@@ -255,9 +466,7 @@
         document.getElementById('err1').style.display = 'none';
         datos.densidad = v;
         const t = fmt(v) + ' g/mL';
-        document.getElementById('r-densidad').textContent = t;
-        document.getElementById('r-densidad2').textContent = t;
-        document.getElementById('r-densidad3').textContent = t;
+        ['r-densidad','r-densidad2','r-densidad3'].forEach(id => document.getElementById(id).textContent = t);
         mostrar(2);
       } else if (paso === 2) {
         const v = parseFloat(document.getElementById('gramos').value);
@@ -265,8 +474,7 @@
         document.getElementById('err2').style.display = 'none';
         datos.gramos = v;
         const t = fmt(v) + ' g';
-        document.getElementById('r-gramos').textContent = t;
-        document.getElementById('r-gramos2').textContent = t;
+        ['r-gramos','r-gramos2'].forEach(id => document.getElementById(id).textContent = t);
         mostrar(3);
       } else if (paso === 3) {
         const v = parseFloat(document.getElementById('agua').value);
@@ -287,9 +495,10 @@
       const A = datos.gramos / datos.densidad;
       const B = datos.agua;
       const C = (A + B) / A;
-      const resultado = Math.round(datos.ppm * C);
+      datos.A = A; datos.B = B; datos.C = C;
+      datos.resultado = Math.round(datos.ppm * C);
 
-      document.getElementById('resultado-valor').textContent = String(resultado);
+      document.getElementById('resultado-valor').textContent = String(datos.resultado);
       mostrar(5);
     }
 
@@ -302,9 +511,42 @@
     }
 
     function reiniciar() {
-      ['densidad', 'gramos', 'agua', 'ppm'].forEach(id => document.getElementById(id).value = '');
+      ['densidad','gramos','agua','ppm'].forEach(id => document.getElementById(id).value = '');
       Object.keys(datos).forEach(k => delete datos[k]);
       mostrar(1);
+    }
+
+    function abrirReporte() {
+      const ahora = new Date();
+      const fechaStr = ahora.toLocaleDateString('es-CL', { day:'2-digit', month:'long', year:'numeric' });
+      const horaStr = ahora.toLocaleTimeString('es-CL', { hour:'2-digit', minute:'2-digit' });
+      const folio = 'ENS-MG-' + ahora.getFullYear() +
+        String(ahora.getMonth()+1).padStart(2,'0') +
+        String(ahora.getDate()).padStart(2,'0') + '-' +
+        String(ahora.getHours()).padStart(2,'0') +
+        String(ahora.getMinutes()).padStart(2,'0');
+
+      document.getElementById('rpt-folio').textContent = folio;
+      document.getElementById('rpt-fecha').textContent = fechaStr;
+      document.getElementById('rpt-hora').textContent = horaStr;
+      document.getElementById('rpt-pie-fecha').textContent = fechaStr + ' ' + horaStr;
+
+      document.getElementById('d-densidad').textContent = fmt(datos.densidad) + ' g/mL';
+      document.getElementById('d-gramos').textContent = fmt(datos.gramos) + ' g';
+      document.getElementById('d-volsal').textContent = fmt(datos.A) + ' mL';
+      document.getElementById('d-agua').textContent = fmt(datos.agua) + ' g';
+      document.getElementById('d-factor').textContent = datos.C.toFixed(4);
+      document.getElementById('d-ppm').textContent = fmt(datos.ppm) + ' ppm';
+      document.getElementById('d-resultado').textContent = String(datos.resultado);
+
+      document.getElementById('rpt-fecha-muestra').value = ahora.toISOString().split('T')[0];
+
+      document.getElementById('reporte').style.display = 'block';
+      window.scrollTo(0, 0);
+    }
+
+    function cerrarReporte() {
+      document.getElementById('reporte').style.display = 'none';
     }
   </script>
 </body>
